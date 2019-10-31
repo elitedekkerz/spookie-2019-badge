@@ -21,14 +21,15 @@ def powerdown(t=5):
 
 def ball(caller=None):
     now = ticks_ms()/1000
-    t1 = (1+sin(now/2))/2
-    t2 = (1+sin(now/3))/2
-    t3 = (1+sin(now/7))/4
+    t1 = sin(now/2)
+    t2 = sin(now/3)
+    t3 = sin(now/7)
     for pixel in badge.pixels:
+        r = 1-(abs(pixel.x-t1)+abs(pixel.y-t2))/2
         pixel.set_rgb((
-            0.6667-(abs(pixel.x*t1)+abs(pixel.y*t2))/3,
+            r if r > 0 else 0,
             (abs(pixel.x)+abs(pixel.y))/4,
-            t3
+            abs(t3)/2
             ))
     badge.np.write()
 
