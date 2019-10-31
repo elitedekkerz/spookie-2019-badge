@@ -1,6 +1,6 @@
 from badge import badge
 from artnet import artnet
-from machine import idle, deepsleep, Pin, Timer
+from machine import idle, sleep, deepsleep, Pin, Timer
 from time import time, ticks_ms
 from math import sin
 import network
@@ -9,7 +9,7 @@ from esp32 import wake_on_ext0, WAKEUP_ALL_LOW
 
 import random
 random.seed(1337)
-
+print("done importing")
 #power down for t minutes
 def powerdown(t=5):
     #turn off led strip
@@ -26,20 +26,23 @@ def ball(caller=None):
     t3 = (1+sin(now/7))/4
     for pixel in badge.pixels:
         pixel.set_rgb((
-            0.6667-(abs(pixel.x-t1)+abs(pixel.y-t2))/3,
-            (abs(pixel.x-0.5)+abs(pixel.y-0.5))/2,
+            0.6667-(abs(pixel.x*t1)+abs(pixel.y*t2))/3,
+            (abs(pixel.x)+abs(pixel.y))/4,
             t3
             ))
     badge.np.write()
 
 #turn on led strip
+print("led power on")
 badge.led_power.on()
 
 #draw default pattern on ledstrip
+print("setting animation timers")
 anim_timer = Timer(-1)
 anim_timer.init(period=100, mode=Timer.PERIODIC, callback=ball)
 
 #connect to wlan and draw noise while waiting
+print("connecting to wlan")
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect('EliteDekkerz', 'jaloviina')
@@ -48,6 +51,7 @@ while not wlan.isconnected():
     idle()
 
 #broadcast button status
+print("configuring button broadcast")
 import json
 import usocket
 broadcast_address = '.'.join(wlan.ifconfig()[0].split('.')[:3] + [str(255)])
@@ -75,10 +79,12 @@ def broadcast_status(pin=None):
     s.sendall(json.dumps(packet)+"\n")
 
 #setup button interrupts
+print("setting button interrupts")
 for button in [badge.button_left, badge.button_mid, badge.button_right]:
     button.irq(trigger=Pin.IRQ_FALLING|Pin.IRQ_RISING, handler=broadcast_status)
 
 #draw art-net if available
+print("listening to art-net")
 a = artnet()
 while True:
     data = a.receive()

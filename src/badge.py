@@ -2,28 +2,34 @@ class badge():
     from machine import Pin, unique_id, I2C
     from neopixel import NeoPixel
 
+    print("start")
+
     identity = unique_id()
 
     #buttons
+    print("buttons")
     button_left = Pin(0, Pin.IN, Pin.PULL_UP)
-    button_mid = Pin(32, Pin.IN, Pin.PULL_UP)
+    button_mid = Pin(13, Pin.IN, Pin.PULL_UP)
     button_right = Pin(15, Pin.IN, Pin.PULL_UP)
 
     #led power switch
-    led_power = Pin(18, Pin.OUT)
+    print("led power switch")
+    led_power = Pin(33, Pin.OUT)
     led_power.off()
 
     #usb/battery status
+    print("battery status")
     usb_power = Pin(34, Pin.IN)
     battery_charging = Pin(35, Pin.IN)
     battery_standby = Pin(25, Pin.IN)
 
     #i2c
+    print("i2c")
     i2c = I2C(scl=Pin(23), sda=Pin(22), freq=100000)
-    
 
     #neopixels
     #https://learn.adafruit.com/led-tricks-gamma-correction/the-quick-fix
+    print("neopixel")
     gamma = [
         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
         0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,
@@ -42,7 +48,8 @@ class badge():
       177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
       215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255
       ]
-    np = NeoPixel(Pin(5),25)
+    Pin(32, Pin.IN)
+    np = NeoPixel(Pin(26),25)
 
     class pixel():
         def __init__(self,x,y,np_id):
@@ -61,8 +68,11 @@ class badge():
                 )
 
     #array of pixels with their coordinates on the badge
+    print("creating pixels")
     pixels = []
     i = 0
-    for pos in [[0.237, 1.0], [0.406, 0.891], [0.594, 0.894], [0.727, 0.99], [0.882, 0.856], [0.642, 0.744], [0.336, 0.75], [0.022, 0.812], [0.137, 0.618], [0.492, 0.648], [0.782, 0.603], [0.981, 0.701], [0.983, 0.476], [0.786, 0.403], [0.538, 0.446], [0.32, 0.497], [0.0, 0.427], [0.155, 0.23], [0.343, 0.306], [0.544, 0.234], [0.797, 0.218], [1.0, 0.273], [0.835, 0.026], [0.675, 0.0], [0.48, 0.041]]:
+    for pos in [[-0.09, -0.837], [0.28, -1.0], [0.675, -0.951], [1.0, -0.455], [0.602, -0.567], [0.174, -0.523], [-0.259, -0.416], [-0.66, -0.542], [-0.934, -0.237], [-0.38, 0.008], [0.092, -0.109], [0.58, -0.196], [0.966, -0.049], [0.963, 0.401], [0.573, 0.204], [-0.024, 0.294], [-0.591, 0.335], [-1.0, 0.158], [-0.921, 0.624], [-0.314, 0.594], [0.398, 0.54], [0.768, 0.711], [0.464, 0.981], [0.042, 0.785], [-0.499, 1.0]]:
         pixels.append(pixel(pos[0],pos[1],i))
         i += 1
+
+    print("done")
