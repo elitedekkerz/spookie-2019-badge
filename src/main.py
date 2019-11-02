@@ -41,7 +41,7 @@ badge.led_power.on()
 print("setting animation timers")
 anim_timer = Timer(-1)
 anim_timer.init(period=100, mode=Timer.PERIODIC, callback=ball)
-
+"""
 #connect to wlan and draw noise while waiting
 print("connecting to wlan")
 wlan = network.WLAN(network.STA_IF)
@@ -111,3 +111,4 @@ while True:
         if data['data'] == []:
             continue
         raise
+"""
