@@ -1,5 +1,4 @@
 from badge import badge
-from artnet import artnet
 from machine import idle, sleep, deepsleep, Pin, Timer
 from time import time, ticks_ms
 from math import sin
@@ -11,13 +10,15 @@ import random
 random.seed(1337)
 print("done importing")
 #power down for t minutes
-def powerdown(t=5):
+def powerdown(caller = None):
+    print("going to sleep")
+
     #turn off led strip
     badge.led_power.off()
 
     wake_on_ext0(pin = badge.button_mid , level = WAKEUP_ALL_LOW)
     #set esp to sleep
-    deepsleep(1000*60*t)
+    deepsleep()
 
 def ball(caller=None):
     now = ticks_ms()/1000
@@ -41,6 +42,9 @@ badge.led_power.on()
 print("setting animation timers")
 anim_timer = Timer(-1)
 anim_timer.init(period=100, mode=Timer.PERIODIC, callback=ball)
+
+badge.button_mid.irq(trigger=Pin.IRQ_RISING, handler=powerdown)
+
 """
 #connect to wlan and draw noise while waiting
 print("connecting to wlan")
@@ -83,32 +87,4 @@ def broadcast_status(pin=None):
 print("setting button interrupts")
 for button in [badge.button_left, badge.button_mid, badge.button_right]:
     button.irq(trigger=Pin.IRQ_FALLING|Pin.IRQ_RISING, handler=broadcast_status)
-
-#draw art-net if available
-print("listening to art-net")
-a = artnet()
-while True:
-    data = a.receive()
-
-    #ignore if no data
-    if data == None:
-        break
-    else:
-        anim_timer.deinit()
-    
-    try:
-        rgb = (data['data'][0],data['data'][1],data['data'][2])
-
-        #ignore if no change
-        if rgb == badge.np[0]:
-            continue
-
-        for i in range(badge.np.n):
-            badge.np[i] = rgb
-        badge.np.write()
-    except:
-        #ignore if for some reason data field is empty
-        if data['data'] == []:
-            continue
-        raise
 """
